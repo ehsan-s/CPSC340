@@ -79,6 +79,21 @@ def q1():
         
         print('error for k =', k , ': train error', train_error, 'test error', test_error)
 
+        # section 1.3 ___START
+        if(k==1):
+            utils.plot_classifier(KNN_model, X, y)
+            fname = os.path.join("..", "figs", "q1_3_myKNNClassifier.pdf")
+            plt.savefig(fname)
+            print("Figure saved as '%s'" % fname)
+
+            sklearn_KNN = KNeighborsClassifier(n_neighbors = 1)
+            sklearn_KNN.fit(X, y)
+            utils.plot_classifier(sklearn_KNN, X, y)
+            fname = os.path.join("..", "figs", "q1_3_sklearnKNNClassifier.pdf")
+            plt.savefig(fname)
+            print("Figure saved as '%s'" % fname)
+        # section 1.3 ___END
+
     print('Decision Tree Classifier')
     decision_tree_model = DecisionTree(3)
     decision_tree_model.fit(X, y)
@@ -88,7 +103,7 @@ def q1():
     
     y_predicted = decision_tree_model.predict(X_test)
     test_error = np.mean(y_predicted != y_test)
-    
+
     print('error for decision tree: train error', train_error, 'test error', test_error)
 
 

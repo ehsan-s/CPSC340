@@ -34,13 +34,12 @@ class Kmeans:
             changes = np.sum(y != y_old)
             # print('Running K-means, changes in cluster assignment = {}'.format(changes))
 
-            self.error(X, y, means)
 
             # Stop if no point changed cluster
             if changes == 0:
                 break
 
-            print(self.error(X, y, means))
+            # print(self.error(X, y, means))
 
         self.means = means
 

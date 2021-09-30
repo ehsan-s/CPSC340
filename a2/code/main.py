@@ -311,8 +311,27 @@ def q5():
 @handle("5.1")
 def q5_1():
     X = load_dataset("clusterData.pkl")["X"]
-    model = Kmeans(k=4)
-    model.fit(X)
+    
+    kmeansModels = []
+    kmeansModelErrors = []
+    for i in range(50):
+        model = Kmeans(k=4)
+        error = model.fit(X)
+        y = model.predict(X)
+        error = model.error(X, y, model.means)
+        kmeansModels += [model]
+        kmeansModelErrors += [error]
+
+    final_model = kmeansModels[np.argmin(kmeansModelErrors)]
+    y = final_model.predict(X)
+    final_error = np.min(kmeansModelErrors)
+    print('finalKmeansClassifier error:', final_error)
+
+    plt.scatter(X[:, 0], X[:, 1], c=y, cmap="jet")
+    fname = Path("..", "figs",  "q5_1_finalKmeansClassifier.pdf")
+    plt.savefig(fname)
+    print(f"Figure saved as {fname}")
+
 
 
 @handle("5.2")

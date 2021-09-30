@@ -173,6 +173,18 @@ def q2():
     print("Figure saved as '%s'" % fname)
     # section 2.2 ___END
 
+    # section 2.4 ___START
+    plt.figure() 
+    plt.plot(ks, train_errors, label = 'Train Error')
+    plt.xlabel('k')
+    plt.xticks(ks)
+    plt.ylabel('Error/Accuracy ???')
+    plt.legend()
+    fname = os.path.join("..", "figs", "q2_4_trainAccuraciesForDifferentK.pdf")
+    plt.savefig(fname)
+    print("Figure saved as '%s'" % fname)
+    # section 2.4 ___END
+
 
 @handle("3.2")
 def q3_2():

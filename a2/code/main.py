@@ -144,6 +144,35 @@ def q2():
     print('ks: ', ks)
     print('cv_accs: ', cv_accs)
 
+    # section 2.2 ___START
+    train_errors = []
+    test_errors = []
+    for k in ks:
+        KNN_model = KNN(k)
+        KNN_model.fit(X, y)
+
+        y_predicted = KNN_model.predict(X)
+        train_error = np.mean(y_predicted != y)
+        train_errors += [train_error]
+
+        y_predicted = KNN_model.predict(X_test)
+        test_error = np.mean(y_predicted != y_test)
+        test_errors += [test_error]
+
+    print('test_errors: ', test_errors)
+    print('train_errors: ', train_errors)
+
+    plt.plot(ks, cv_accs, label = 'Cross Validation')
+    plt.plot(ks, test_errors, label = 'Test Error')
+    plt.xlabel('k')
+    plt.xticks(ks)
+    plt.ylabel('Error/Accuracy ???')
+    plt.legend()
+    fname = os.path.join("..", "figs", "q2_2_valtestAccuraciesForDifferentK.pdf")
+    plt.savefig(fname)
+    print("Figure saved as '%s'" % fname)
+    # section 2.2 ___END
+
 
 @handle("3.2")
 def q3_2():

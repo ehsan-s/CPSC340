@@ -311,9 +311,8 @@ def q5():
 @handle("5.1")
 def q5_1():
     X = load_dataset("clusterData.pkl")["X"]
-
-    """YOUR CODE HERE FOR Q5.1"""
-    raise NotImplementedError()
+    model = Kmeans(k=4)
+    model.fit(X)
 
 
 @handle("5.2")

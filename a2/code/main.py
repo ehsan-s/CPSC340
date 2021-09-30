@@ -66,8 +66,30 @@ def q1():
     X_test = dataset["Xtest"]
     y_test = dataset["ytest"]
 
-    """YOUR CODE HERE FOR Q1"""
-    raise NotImplementedError()
+    print('KNN Classifier')
+    for k in [1, 3, 10]:
+        KNN_model = KNN(k)
+        KNN_model.fit(X, y)
+
+        y_predicted = KNN_model.predict(X)
+        train_error = np.mean(y_predicted != y)
+
+        y_predicted = KNN_model.predict(X_test)
+        test_error = np.mean(y_predicted != y_test)
+        
+        print('error for k =', k , ': train error', train_error, 'test error', test_error)
+
+    print('Decision Tree Classifier')
+    decision_tree_model = DecisionTree(3)
+    decision_tree_model.fit(X, y)
+
+    y_predicted = decision_tree_model.predict(X)
+    train_error = np.mean(y_predicted != y)
+    
+    y_predicted = decision_tree_model.predict(X_test)
+    test_error = np.mean(y_predicted != y_test)
+    
+    print('error for decision tree: train error', train_error, 'test error', test_error)
 
 
 @handle("2")

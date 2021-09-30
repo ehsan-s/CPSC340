@@ -162,6 +162,7 @@ def q2():
     print('test_errors: ', test_errors)
     print('train_errors: ', train_errors)
 
+    plt.figure() 
     plt.plot(ks, cv_accs, label = 'Cross Validation')
     plt.plot(ks, test_errors, label = 'Test Error')
     plt.xlabel('k')
@@ -318,7 +319,7 @@ def q5_1():
         model = Kmeans(k=4)
         error = model.fit(X)
         y = model.predict(X)
-        error = model.error(X, y, model.means)
+        model.error(X, y, model.means)
         kmeansModels += [model]
         kmeansModelErrors += [error]
 
@@ -338,8 +339,26 @@ def q5_1():
 def q5_2():
     X = load_dataset("clusterData.pkl")["X"]
 
-    """YOUR CODE HERE FOR Q5.2"""
-    raise NotImplementedError()
+    minError_k = []
+
+    for k in range(1,11):
+        kmeansModelErrors = []
+        for i in range(50):
+            model = Kmeans(k=k)
+            model.fit(X)
+            y = model.predict(X)
+            error = model.error(X, y, model.means)
+            kmeansModelErrors += [error]
+        minError_k += [np.min(kmeansModelErrors)]
+
+    plt.figure() 
+    plt.plot(range(1,11), minError_k, label = 'Min Error')
+    plt.xlabel('k')
+    plt.ylabel('Error')
+    fname = os.path.join("..", "figs", "q5_2_trainAccuraciesForDifferentK.pdf")
+    plt.savefig(fname)
+    print("Figure saved as '%s'" % fname)
+
 
 
 if __name__ == "__main__":

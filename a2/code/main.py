@@ -24,6 +24,8 @@ from knn import KNN
 from naive_bayes import NaiveBayes, NaiveBayesLaplace
 from random_tree import RandomForest, RandomTree
 
+import math
+
 
 def load_dataset(filename):
     with open(Path("..", "data", filename), "rb") as f:
@@ -116,9 +118,31 @@ def q2():
     y_test = dataset["ytest"]
 
     ks = list(range(1, 30, 4))
-    """YOUR CODE HERE FOR Q2"""
-    raise NotImplementedError()
+    
+    cv_accs = []
+    n, d = X.shape
+    n_fold = 10
+    fold_size = math.ceil(n/n_fold)
 
+    for k in ks:
+        KNN_model = KNN(k)
+
+        val_errors = []
+        for i in range(n_fold):
+            mask = np.ones(n, dtype=bool)
+            mask [i * n_fold : min(n, (i+1) * n_fold)] = False
+            X_train, y_train = X[mask], y[mask]
+            X_val, y_val = X[~mask], y[~mask]
+
+            KNN_model.fit(X_train, y_train)
+            y_predicted = KNN_model.predict(X_val)
+            val_error = np.mean(y_predicted != y_val)
+            val_errors += [val_error]
+
+        cv_accs += [np.mean(val_errors)]
+
+    print('ks: ', ks)
+    print('cv_accs: ', cv_accs)
 
 
 @handle("3.2")

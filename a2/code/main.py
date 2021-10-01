@@ -24,6 +24,8 @@ from knn import KNN
 from naive_bayes import NaiveBayes, NaiveBayesLaplace
 from random_tree import RandomForest, RandomTree
 
+import math
+
 
 def load_dataset(filename):
     with open(Path("..", "data", filename), "rb") as f:
@@ -66,8 +68,45 @@ def q1():
     X_test = dataset["Xtest"]
     y_test = dataset["ytest"]
 
-    """YOUR CODE HERE FOR Q1"""
-    raise NotImplementedError()
+    print('KNN Classifier')
+    for k in [1, 3, 10]:
+        KNN_model = KNN(k)
+        KNN_model.fit(X, y)
+
+        y_predicted = KNN_model.predict(X)
+        train_error = np.mean(y_predicted != y)
+
+        y_predicted = KNN_model.predict(X_test)
+        test_error = np.mean(y_predicted != y_test)
+        
+        print('error for k =', k , ': train error', train_error, 'test error', test_error)
+
+        # section 1.3 ___START
+        if(k==1):
+            utils.plot_classifier(KNN_model, X, y)
+            fname = os.path.join("..", "figs", "q1_3_myKNNClassifier.pdf")
+            plt.savefig(fname)
+            print("Figure saved as '%s'" % fname)
+
+            sklearn_KNN = KNeighborsClassifier(n_neighbors = 1)
+            sklearn_KNN.fit(X, y)
+            utils.plot_classifier(sklearn_KNN, X, y)
+            fname = os.path.join("..", "figs", "q1_3_sklearnKNNClassifier.pdf")
+            plt.savefig(fname)
+            print("Figure saved as '%s'" % fname)
+        # section 1.3 ___END
+
+    print('Decision Tree Classifier')
+    decision_tree_model = DecisionTree(3)
+    decision_tree_model.fit(X, y)
+
+    y_predicted = decision_tree_model.predict(X)
+    train_error = np.mean(y_predicted != y)
+    
+    y_predicted = decision_tree_model.predict(X_test)
+    test_error = np.mean(y_predicted != y_test)
+
+    print('error for decision tree: train error', train_error, 'test error', test_error)
 
 
 @handle("2")
@@ -79,9 +118,73 @@ def q2():
     y_test = dataset["ytest"]
 
     ks = list(range(1, 30, 4))
-    """YOUR CODE HERE FOR Q2"""
-    raise NotImplementedError()
+    
+    cv_accs = []
+    n, d = X.shape
+    n_fold = 10
+    fold_size = math.ceil(n/n_fold)
 
+    for k in ks:
+        KNN_model = KNN(k)
+
+        val_errors = []
+        for i in range(n_fold):
+            mask = np.ones(n, dtype=bool)
+            mask [i * n_fold : min(n, (i+1) * n_fold)] = False
+            X_train, y_train = X[mask], y[mask]
+            X_val, y_val = X[~mask], y[~mask]
+
+            KNN_model.fit(X_train, y_train)
+            y_predicted = KNN_model.predict(X_val)
+            val_error = np.mean(y_predicted != y_val)
+            val_errors += [val_error]
+
+        cv_accs += [np.mean(val_errors)]
+
+    print('ks: ', ks)
+    print('cv_accs: ', cv_accs)
+
+    # section 2.2 ___START
+    train_errors = []
+    test_errors = []
+    for k in ks:
+        KNN_model = KNN(k)
+        KNN_model.fit(X, y)
+
+        y_predicted = KNN_model.predict(X)
+        train_error = np.mean(y_predicted != y)
+        train_errors += [train_error]
+
+        y_predicted = KNN_model.predict(X_test)
+        test_error = np.mean(y_predicted != y_test)
+        test_errors += [test_error]
+
+    print('test_errors: ', test_errors)
+    print('train_errors: ', train_errors)
+
+    plt.figure() 
+    plt.plot(ks, cv_accs, label = 'Cross Validation')
+    plt.plot(ks, test_errors, label = 'Test Error')
+    plt.xlabel('k')
+    plt.xticks(ks)
+    plt.ylabel('Error/Accuracy ???')
+    plt.legend()
+    fname = os.path.join("..", "figs", "q2_2_valtestAccuraciesForDifferentK.pdf")
+    plt.savefig(fname)
+    print("Figure saved as '%s'" % fname)
+    # section 2.2 ___END
+
+    # section 2.4 ___START
+    plt.figure() 
+    plt.plot(ks, train_errors, label = 'Train Error')
+    plt.xlabel('k')
+    plt.xticks(ks)
+    plt.ylabel('Error/Accuracy ???')
+    plt.legend()
+    fname = os.path.join("..", "figs", "q2_4_trainAccuraciesForDifferentK.pdf")
+    plt.savefig(fname)
+    print("Figure saved as '%s'" % fname)
+    # section 2.4 ___END
 
 
 @handle("3.2")
@@ -213,17 +316,54 @@ def q5():
 @handle("5.1")
 def q5_1():
     X = load_dataset("clusterData.pkl")["X"]
+    
+    best_kmeansModel = None
+    best_kmeansModelError = np.inf
 
-    """YOUR CODE HERE FOR Q5.1"""
-    raise NotImplementedError()
+    for i in range(50):
+        model = Kmeans(k=4)
+        model.fit(X)
+        y = model.predict(X)
+        error = model.error(X, y, model.means)
+        if(error < best_kmeansModelError):
+            best_kmeansModelError = error
+            best_kmeansModel = model
+
+    y = best_kmeansModel.predict(X)
+    print('finalKmeansClassifier error:', best_kmeansModelError)
+
+    plt.scatter(X[:, 0], X[:, 1], c=y, cmap="jet")
+    fname = Path("..", "figs",  "q5_1_finalKmeansClassifier.pdf")
+    plt.savefig(fname)
+    print(f"Figure saved as {fname}")
+
 
 
 @handle("5.2")
 def q5_2():
     X = load_dataset("clusterData.pkl")["X"]
 
-    """YOUR CODE HERE FOR Q5.2"""
-    raise NotImplementedError()
+    minError_k = []
+
+    for k in range(1,11):
+        best_kmeansModelError = np.inf
+        for i in range(50):
+            model = Kmeans(k=k)
+            model.fit(X)
+            y = model.predict(X)
+            error = model.error(X, y, model.means)
+            if(error < best_kmeansModelError):
+                best_kmeansModelError = error
+        minError_k += [best_kmeansModelError]
+
+    plt.figure() 
+    plt.plot(range(1,11), minError_k, label = 'Min Error')
+    plt.xlabel('k')
+    plt.ylabel('Error')
+    fname = os.path.join("..", "figs", "q5_2_trainAccuraciesForDifferentK.pdf")
+    plt.savefig(fname)
+    print("Figure saved as '%s'" % fname)
+
 
 
 if __name__ == "__main__":

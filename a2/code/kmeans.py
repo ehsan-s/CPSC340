@@ -34,6 +34,7 @@ class Kmeans:
             changes = np.sum(y != y_old)
             # print('Running K-means, changes in cluster assignment = {}'.format(changes))
 
+
             # Stop if no point changed cluster
             if changes == 0:
                 break
@@ -49,5 +50,8 @@ class Kmeans:
         return np.argmin(distance_matrix, axis=1)
 
     def error(self, X, y, means):
-        """YOUR CODE HERE FOR Q5.1"""
-        raise NotImplementedError()
+        n, d = X.shape
+        selected_means = np.array([means[yy] for yy in y])
+        error = np.sum((X - selected_means)**2)
+        return error
+

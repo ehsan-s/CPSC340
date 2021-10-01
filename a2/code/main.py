@@ -313,20 +313,20 @@ def q5():
 def q5_1():
     X = load_dataset("clusterData.pkl")["X"]
     
-    kmeansModels = []
-    kmeansModelErrors = []
+    best_kmeansModel = None
+    best_kmeansModelError = np.inf
+
     for i in range(50):
         model = Kmeans(k=4)
-        error = model.fit(X)
+        model.fit(X)
         y = model.predict(X)
-        model.error(X, y, model.means)
-        kmeansModels += [model]
-        kmeansModelErrors += [error]
+        error = model.error(X, y, model.means)
+        if(error < best_kmeansModelError):
+            best_kmeansModelError = error
+            best_kmeansModel = model
 
-    final_model = kmeansModels[np.argmin(kmeansModelErrors)]
-    y = final_model.predict(X)
-    final_error = np.min(kmeansModelErrors)
-    print('finalKmeansClassifier error:', final_error)
+    y = best_kmeansModel.predict(X)
+    print('finalKmeansClassifier error:', best_kmeansModelError)
 
     plt.scatter(X[:, 0], X[:, 1], c=y, cmap="jet")
     fname = Path("..", "figs",  "q5_1_finalKmeansClassifier.pdf")
@@ -342,14 +342,15 @@ def q5_2():
     minError_k = []
 
     for k in range(1,11):
-        kmeansModelErrors = []
+        best_kmeansModelError = np.inf
         for i in range(50):
             model = Kmeans(k=k)
             model.fit(X)
             y = model.predict(X)
             error = model.error(X, y, model.means)
-            kmeansModelErrors += [error]
-        minError_k += [np.min(kmeansModelErrors)]
+            if(error < best_kmeansModelError):
+                best_kmeansModelError = error
+        minError_k += [best_kmeansModelError]
 
     plt.figure() 
     plt.plot(range(1,11), minError_k, label = 'Min Error')

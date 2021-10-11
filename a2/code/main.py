@@ -117,6 +117,8 @@ def q2():
     X_test = dataset["Xtest"]
     y_test = dataset["ytest"]
 
+    print()
+
     ks = list(range(1, 30, 4))
     
     cv_accs = []
@@ -130,7 +132,7 @@ def q2():
         val_errors = []
         for i in range(n_fold):
             mask = np.ones(n, dtype=bool)
-            mask [i * n_fold : min(n, (i+1) * n_fold)] = False
+            mask [i * fold_size : min(n, (i+1) * fold_size)] = False
             X_train, y_train = X[mask], y[mask]
             X_val, y_val = X[~mask], y[~mask]
 
@@ -164,10 +166,26 @@ def q2():
 
     plt.figure() 
     plt.plot(ks, cv_accs, label = 'Cross Validation')
-    plt.plot(ks, test_errors, label = 'Test Error')
+    plt.plot(ks, test_errors, label = 'Test')
     plt.xlabel('k')
     plt.xticks(ks)
-    plt.ylabel('Error/Accuracy ???')
+    plt.ylabel('Error')
+    plt.legend()
+    fname = os.path.join("..", "figs", "q2_2_valtestErrorsForDifferentK.pdf")
+    plt.savefig(fname)
+    print("Figure saved as '%s'" % fname)
+
+    test_accuracies = [1-e for e in test_errors]
+    cv_accuraries = [1-e for e in cv_accs]
+    train_accuracies = [1-e for e in train_errors]
+    print('test_accuracies: ', test_errors)
+    print('train_accuracies: ', train_errors)
+    plt.figure() 
+    plt.plot(ks, cv_accuraries, label = 'Cross Validation')
+    plt.plot(ks, test_accuracies, label = 'Test')
+    plt.xlabel('k')
+    plt.xticks(ks)
+    plt.ylabel('Accuracy')
     plt.legend()
     fname = os.path.join("..", "figs", "q2_2_valtestAccuraciesForDifferentK.pdf")
     plt.savefig(fname)
@@ -176,10 +194,20 @@ def q2():
 
     # section 2.4 ___START
     plt.figure() 
-    plt.plot(ks, train_errors, label = 'Train Error')
+    plt.plot(ks, train_errors, label = 'Train')
     plt.xlabel('k')
     plt.xticks(ks)
-    plt.ylabel('Error/Accuracy ???')
+    plt.ylabel('Error')
+    plt.legend()
+    fname = os.path.join("..", "figs", "q2_4_trainErrorsForDifferentK.pdf")
+    plt.savefig(fname)
+    print("Figure saved as '%s'" % fname)
+
+    plt.figure() 
+    plt.plot(ks, train_accuracies, label = 'Train')
+    plt.xlabel('k')
+    plt.xticks(ks)
+    plt.ylabel('Accuracy')
     plt.legend()
     fname = os.path.join("..", "figs", "q2_4_trainAccuraciesForDifferentK.pdf")
     plt.savefig(fname)
@@ -327,8 +355,8 @@ def q5_1():
 
     y = best_kmeansModel.predict(X)
     print('finalKmeansClassifier error:', best_kmeansModelError)
-
-    plt.scatter(X[:, 0], X[:, 1], c=y, cmap="jet")
+    utils.plot_4class_classifier(best_kmeansModel, X, y)
+    # plt.scatter(X[:, 0], X[:, 1], c=y, cmap="jet")
     fname = Path("..", "figs",  "q5_1_finalKmeansClassifier.pdf")
     plt.savefig(fname)
     print(f"Figure saved as {fname}")

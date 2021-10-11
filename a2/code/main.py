@@ -316,11 +316,15 @@ def q4():
         print(f"    Training error: {tr_error:.3f}")
         print(f"    Testing error: {te_error:.3f}")
 
-    print("Decision tree info gain")
+    print("Decision tree info gain:")
     evaluate_model(DecisionTree(max_depth=np.inf, stump_class=DecisionStumpInfoGain))
 
     """YOUR CODE HERE FOR Q4"""
-    raise NotImplementedError()
+    print("Random tree:")
+    evaluate_model(RandomTree(max_depth=np.inf))
+
+    print("Random forest:")
+    evaluate_model(RandomForest(num_trees=50, max_depth=np.inf))
 
 
 @handle("5")

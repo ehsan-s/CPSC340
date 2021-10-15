@@ -107,11 +107,15 @@ class LeastSquaresBias:
     "Least Squares with a bias added"
     def fit(self, X, y):
         """YOUR CODE HERE FOR Q3.1"""
-        raise NotImplementedError()
+        ones = np.ones((X.shape[0], 1))
+        Z = np.c_[ones, X]
+        self.w = solve(Z.T @ Z, Z.T @ y)
 
     def predict(self, X_pred):
         """YOUR CODE HERE FOR Q3.1"""
-        raise NotImplementedError()
+        ones = np.ones((X_pred.shape[0], 1))
+        Z = np.c_[ones, X_pred]
+        return Z @ self.w
 
 
 class LeastSquaresPoly:
@@ -122,15 +126,23 @@ class LeastSquaresPoly:
 
     def fit(self, X, y):
         """YOUR CODE HERE FOR Q3.2"""
-        raise NotImplementedError()
+        Z = self._poly_basis(X)
+        self.leastSquares.fit(Z, y)
 
     def predict(self, X_pred):
         """YOUR CODE HERE FOR Q3.2"""
-        raise NotImplementedError()
+        Z = self._poly_basis(X_pred)
+        return self.leastSquares.predict(Z)
 
     # A private helper function to transform any X with d=1 into
     # the polynomial basis defined by this class at initialization.
     # Returns the matrix Z that is the polynomial basis of X.
     def _poly_basis(self, X):
         """YOUR CODE HERE FOR Q3.2"""
-        raise NotImplementedError()
+        ones = np.ones((X.shape[0], 1))
+        Z = np.c_[ones]
+        X_p = X
+        for i in range(1, self.p + 1):
+            X_p = X_p * X
+            Z = np.c_[Z, X ** i]
+        return Z

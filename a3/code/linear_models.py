@@ -14,8 +14,8 @@ class LeastSquares:
 # Least squares where each sample point X has a weight associated with it.
 class WeightedLeastSquares(LeastSquares):  # inherits the predict() function from LeastSquares
     def fit(self, X, y, v):
-        """YOUR CODE HERE FOR Q2.1"""
-        raise NotImplementedError()
+        V = np.diag(v)
+        self.w = solve(X.T @ V @ X, X.T @ V @ y)
 
 
 class LinearModelGradientDescent:
@@ -95,6 +95,7 @@ class LinearModelGradientDescent:
 
         # Optimize
         self.w, self.fs, self.gs, self.ws = self.optimize(w, X, y)
+        return self.fs
 
     def predict(self, X):
         """

@@ -195,7 +195,7 @@ def q3_2():
     for i, (p, ax) in enumerate(zip(p_vals, (ax for row in axes for ax in row))):
         print(f"p = {p}")
 
-        model = linear_models.LeastSquaresPoly(p)
+        model = linear_models.LeastSquaresPoly2(p)
         model.fit(X, y)
         y_hat = model.predict(X)
         err_train = np.mean((y_hat - y) ** 2)

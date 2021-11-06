@@ -5,7 +5,7 @@ from scipy.optimize import approx_fprime
 import matplotlib.pyplot as plt
 from scipy.sparse import csr_matrix as sparse_matrix
 
-
+print(2)
 def test_and_plot(model, X, y, Xtest=None, ytest=None, title=None, filename=None):
 
     # Compute training error

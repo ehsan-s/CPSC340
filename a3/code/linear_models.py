@@ -167,3 +167,33 @@ class LeastSquaresPoly1:
             X_poly[:,i] = np.reshape(X_pred ** i, (n))
 
         return X_poly @ self.w
+
+class LeastSquaresPoly2:
+    "Least Squares with polynomial basis"
+
+    def __init__(self, p):
+        self.leastSquares = LeastSquares()
+        self.p = p
+
+    def fit(self, X, y):
+        Z = self._poly_basis(X)
+        self.w = solve(Z.T @ Z, Z.T @ y)
+
+    def predict(self, X_pred):
+        Z = self._poly_basis(X_pred)
+        return Z @ self.w
+
+    # A private helper function to transform any matrix X into
+    # the polynomial basis defined by this class at initialization
+    # Returns the matrix Z that is the polynomial basis of X.
+    def _poly_basis(self, X):
+        Z = np.array([[1.0] * X.shape[0]])
+        Z = Z.T
+        for i in range(1, self.p + 1):
+            new_col = np.array([[1.0] * X.shape[0]])
+            new_col = new_col.T
+
+            for j in range(X.shape[0]):
+                new_col[j] = X[j] ** i
+            Z = np.append(Z, new_col, axis=1)
+        return Z

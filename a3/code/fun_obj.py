@@ -73,7 +73,6 @@ class FunObjLeastSquares(FunObj):
         g = X.T @ (X @ w) - X.T @ y
         return f, g
 
-
 class FunObjRobustRegression(FunObj):
     def evaluate(self, w, X, y):
         """
@@ -84,5 +83,20 @@ class FunObjRobustRegression(FunObj):
         w = ensure_1d(w)
         y = ensure_1d(y)
 
-        """YOUR CODE HERE FOR Q2.3"""
-        raise NotImplementedError()
+        y_hat = X @ w
+
+        residuals = y - y_hat
+
+        f = np.sum(np.log(np.exp(y - y_hat) + np.exp(y_hat - y)))
+
+        n, d = X.shape
+
+        g = np.zeros(d)
+
+        for j in range(d):
+            g_j = 0
+            for i in range(n):
+                g_j += X[i,j] * ( (np.exp((X[i,:] @ w) - y[i]) - np.exp(y[i] - (X[i,:] @ w))) / (np.exp((X[i,:] @ w) - y[i]) + np.exp(y[i] - (X[i,:] @ w))) )
+            g[j] = g_j
+        return f, g
+

@@ -70,9 +70,18 @@ def q2_1():
     data = load_dataset("outliersData.pkl")
     X = data["X"]
     y = data["y"].squeeze(1)
+    v = 400 * [1]
+    v += 100 * [0.1]
 
-    """YOUR CODE FOR Q2.1"""
-    raise NotImplementedError()
+    # Fit weighted least-squares estimator
+    model = linear_models.WeightedLeastSquares()
+    model.fit(X, y, v)
+    print(model.w)
+
+    utils.test_and_plot(
+        model, X, y, title="Weighted Least Squares", filename="weighted_least_squares_outliers.pdf"
+    )
+
 
 
 @handle("2.4")
@@ -103,9 +112,19 @@ def q2_4_1():
     X = data["X"]
     y = data["y"].squeeze(1)
 
-    """YOUR CODE HERE FOR Q2.4.1"""
-    # TODO: Finish FunObjRobustRegression in fun_obj.py.
-    raise NotImplementedError()
+    fun_obj = FunObjRobustRegression()
+    optimizer = OptimizerGradientDescentLineSearch(max_evals=100, verbose=False)
+    model = linear_models.LinearModelGradientDescent(fun_obj, optimizer)
+    model.fit(X, y)
+    print(model.w)
+
+    utils.test_and_plot(
+        model,
+        X,
+        y,
+        title="Linear Regression with Gradient Descent",
+        filename="least_squares_robust_gd.pdf",
+    )
 
 
 @handle("2.4.2")
@@ -122,9 +141,27 @@ def q2_4_2():
     fun_obj = FunObjRobustRegression()
     optimizer = OptimizerGradientDescent(max_evals=100, verbose=False)
     model = linear_models.LinearModelGradientDescent(fun_obj, optimizer)
-    model.fit(X, y)
-    """YOUR CODE HERE FOR Q2.4.2"""
-    raise NotImplementedError()
+    fs_grad = model.fit(X, y)
+    print(len(fs_grad))
+    
+
+    fun_obj = FunObjRobustRegression()
+    optimizer = OptimizerGradientDescentLineSearch(max_evals=100, verbose=False)
+    model = linear_models.LinearModelGradientDescent(fun_obj, optimizer)
+    fs_line = model.fit(X, y)
+    print(len(fs_line))
+
+    plt.figure()
+    plt.plot(fs_grad, color = 'r', label = 'OptimizerGradientDescent')
+    plt.plot(fs_line, color = 'b' , label = 'OptimizerGradientDescentLineSearch')
+    plt.legend()
+    plt.title('Learning Curve')
+    filename = Path("..", "figs", 'learning_curve.pdf')
+    print("Saving to", filename)
+    plt.savefig(filename)
+
+
+    
 
 
 @handle("3")

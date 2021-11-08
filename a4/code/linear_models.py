@@ -242,9 +242,38 @@ class MulticlassLogRegClassifier(LogRegClassifier):
 
     def fit(self, X, y):
         """YOUR CODE HERE FOR Q3.4"""
-        raise NotImplementedError()
+        n, d = X.shape
+        y_classes = np.unique(y)
+        k = len(y_classes)
+
+        # quick check that loss_fn is implemented correctly
+        self.loss_fn.check_correctness(np.zeros(k*d), X, y)
+
+        W = np.zeros([k, d])
+        w = W.flatten()
+        f, g = self.loss_fn.evaluate(w, X, y)
+
+        self.optimizer.reset()
+        self.optimizer.set_fun_obj(self.loss_fn)
+        self.optimizer.set_parameters(w)
+        self.optimizer.set_fun_obj_args(X, y)
+
+        # Collect training information for debugging
+        fs = [f]
+        gs = [g]
+        ws = []
+
+        # Use gradient descent to optimize w
+        while True:
+            f, g, w, break_yes = self.optimizer.step()
+            fs.append(f)
+            gs.append(g)
+            ws.append(w)
+            if break_yes:
+                break
+        W = np.reshape(w, (k, d))
         self.W = W
 
     def predict(self, X_hat):
         """YOUR CODE HERE FOR Q3.4"""
-        raise NotImplementedError()
+        return np.argmax(X_hat @ self.W.T, axis=1)

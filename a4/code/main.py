@@ -189,7 +189,29 @@ def q3_5():
     X_valid, y_valid = data["Xvalid"], data["yvalid"]
 
     """YOUR CODE HERE FOR Q3.5"""
-    raise NotImplementedError()
+    # One vs. all model
+    one_vs_all_model = LogisticRegression(multi_class='ovr', penalty='none', fit_intercept=False)
+    one_vs_all_model.fit(X, y)
+
+    train_err = utils.classification_error(one_vs_all_model.predict(X), y)
+    print(f"Sklearn training 0-1 error: {train_err:.3f}")
+
+    val_err = utils.classification_error(one_vs_all_model.predict(X_valid), y_valid)
+    print(f"Sklearn validation 0-1 error: {val_err:.3f}")
+
+    print(f"Sklearn 0-1 model predicted classes: {np.unique(one_vs_all_model.predict(X))}")
+
+    # Softmax model
+    softmax_model = LogisticRegression(multi_class='multinomial', penalty='none', fit_intercept=False)
+    softmax_model.fit(X, y)
+
+    train_err = utils.classification_error(softmax_model.predict(X), y)
+    print(f"Sklearn training softmax error: {train_err:.3f}")
+
+    val_err = utils.classification_error(softmax_model.predict(X_valid), y_valid)
+    print(f"Sklearn validation softmax error: {val_err:.3f}")
+
+    print(f"Sklearn softmax model predicted classes: {np.unique(softmax_model.predict(X))}")
 
 
 if __name__ == "__main__":

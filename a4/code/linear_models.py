@@ -198,9 +198,34 @@ class LogRegClassifierOneVsAll(LogRegClassifier):
         W = np.zeros([k, d])
 
         """YOUR CODE HERE FOR Q3.2"""
-        # NOTE: make sure that you use {-1, 1} labels y for logistic regression,
-        #       not {0, 1} or anything else.
-        raise NotImplementedError()
+        for i in range(k):
+            ytmp = y.copy().astype(float)
+            ytmp[y == i] = 1
+            ytmp[y != i] = -1
+
+            w_i = np.zeros(d)
+            f, g = self.loss_fn.evaluate(w_i, X, ytmp)
+            
+            self.optimizer.reset()
+            self.optimizer.set_fun_obj(self.loss_fn)
+            self.optimizer.set_parameters(w_i)
+            self.optimizer.set_fun_obj_args(X, ytmp)
+
+            # Collect training information for debugging
+            fs = [f]
+            gs = [g]
+            ws = []
+
+            # Use gradient descent to optimize w
+            while True:
+                f, g, w_i, break_yes = self.optimizer.step()
+                fs.append(f)
+                gs.append(g)
+                ws.append(w_i)
+                if break_yes:
+                    break
+
+            W[i] = w_i
 
         self.W = W
 

@@ -117,11 +117,21 @@ class LogisticRegressionLossL2(LogisticRegressionLoss):
         self.lammy = lammy
 
     def evaluate(self, w, X, y):
+        # help avoid mistakes by potentially reshaping our arguments
         w = ensure_1d(w)
         y = ensure_1d(y)
 
-        """YOUR CODE HERE FOR Q2.1"""
-        raise NotImplementedError()
+        Xw = X @ w
+        yXw = y * Xw  # element-wise multiply; the y_i are in {-1, 1}
+
+        # Calculate the function value
+        f = np.sum(np.log(1 + np.exp(-yXw))) + (self.lammy/2) * np.transpose(w) @ w
+
+        # Calculate the gradient value
+        s = -y / (1 + np.exp(yXw))
+        g = X.T @ s + self.lammy * w
+
+        return f, g
 
 
 class LogisticRegressionLossL0(FunObj):

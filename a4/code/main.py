@@ -78,7 +78,6 @@ def q2_1():
     optimizer = GradientDescentLineSearch(max_evals=400, verbose=False)
     model = linear_models.LogRegClassifier(fun_obj, optimizer)
     model.fit(X, y)
-
     train_err = utils.classification_error(model.predict(X), y)
     print(f"LogReg Training error: {train_err:.3f}")
 
@@ -95,8 +94,22 @@ def q2_2():
     X, y = data["X"], data["y"]
     X_valid, y_valid = data["Xvalid"], data["yvalid"]
 
-    """YOUR CODE HERE FOR Q2.2"""
-    raise NotImplementedError()
+    lamdas = [0.01, 0.1, 1, 10]
+    for lammy in lamdas:
+        print('lambda: ', lammy)
+        fun_obj = LogisticRegressionLoss()
+        optimizer = GradientDescentLineSearchProxL1(lammy)
+        model = linear_models.LogRegClassifier(fun_obj, optimizer)
+        model.fit(X, y)
+
+        train_err = utils.classification_error(model.predict(X), y)
+        print(f"LogReg Training error: {train_err:.3f}")
+
+        val_err = utils.classification_error(model.predict(X_valid), y_valid)
+        print(f"LogReg Validation error: {val_err:.3f}")
+
+        print(f"# nonZeros: {np.sum(model.w != 0)}")
+        print(f"# function evals: {optimizer.num_evals}")
 
 
 @handle("2.3")
@@ -120,6 +133,31 @@ def q2_3():
     print(f"# nonZeros: {np.sum(model.w != 0)}")
     print(f"total function evaluations: {model.total_evals:,}")
 
+
+@handle("2.4")
+def q2_4():
+    x = np.linspace(-5, 5, 100)
+    lammy = 10
+    # the function, which is y = x^2 here
+    y = 1/2 * (x - 2) ** 2 + 1/2 + lammy * np.sqrt(abs(x))
+
+    # setting the axes at the centre
+    fig = plt.figure()
+    ax = fig.add_subplot(1, 1, 1)
+    ax.spines['left'].set_position('center')
+    ax.spines['bottom'].set_position('zero')
+    ax.spines['right'].set_color('none')
+    ax.spines['top'].set_color('none')
+    ax.xaxis.set_ticks_position('bottom')
+    ax.yaxis.set_ticks_position('left')
+    ax.set_title("lambda = " + str(lammy))
+    plt.xlabel("w")
+    plt.ylabel("f(w)")
+    # plot the function
+    plt.plot(x, y, 'r')
+
+    # show the plot
+    plt.show()
 
 @handle("3")
 def q3():

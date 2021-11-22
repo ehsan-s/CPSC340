@@ -1,6 +1,7 @@
 import numpy as np
 from numpy.linalg import solve
 from scipy.optimize import approx_fprime
+import utils
 
 
 class LinearModelGradientDescent:
@@ -136,7 +137,16 @@ class LogRegClassifierForwardSel(LogRegClassifier):
                 # TODO: Fit the model with 'j' added to the features,
                 # then compute the loss and update the min_loss/best_feature.
                 # Also update self.total_evals.
-                raise NotImplementedError()
+
+                w_init = np.zeros(selected_with_j.sum())
+                w_on_sub, *_ = self.optimize(w_init, X[:, selected_with_j], y)
+                self.total_evals += self.optimizer.num_evals
+
+                cur_loss, *_ = self.global_loss_fn.evaluate(w_on_sub, X[:, selected_with_j], y)
+
+                if cur_loss < min_loss:
+                    min_loss = cur_loss
+                    best_feature = j
 
             if min_loss < old_loss:  # something in the loop helped our model
                 selected[best_feature] = True

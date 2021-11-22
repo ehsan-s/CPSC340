@@ -165,6 +165,37 @@ class SoftmaxLoss(FunObj):
         k = len(np.unique(y))
 
         """YOUR CODE HERE FOR Q3.4"""
-        # Hint: you may want to use NumPy's reshape() or flatten()
-        # to be consistent with our matrix notation.
-        raise NotImplementedError()
+        W = np.reshape(w, (k, d))
+
+        f = 0
+        for i in range(n):
+            sum_exp = 0
+            for c in range(k):
+                sum_exp += np.exp(W[c] @ X[i])
+
+            f += -W[y[i]] @ X[i] + np.log(sum_exp)
+
+        G = np.zeros((k, d))
+        # iterate on Gradient rows
+        for c in range(k):
+            # iterate over the elements in each row of Gradient                 
+            for j in range(d):
+                # calculating one element of gradient matrix G[c][j]
+                g_c_j = 0
+                # SUM
+                for i in range(n):
+                    # CALC predicted probability of example i being class c
+                    pred_prob_denom = 0
+                    for c_p in range(k):
+                        pred_prob_denom += np.exp(W[c_p] @ X[i])
+                    pred_prob = ( np.exp(W[c] @ X[i]) ) / pred_prob_denom
+
+                    # CALC indicator function
+                    indicator_func = int(y[i] == c)
+                    
+                    g_c_j += X[i][j] * (pred_prob - indicator_func)
+
+                G[c][j] = g_c_j
+        g = G.flatten()
+
+        return f, g

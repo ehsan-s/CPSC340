@@ -107,7 +107,31 @@ def q1_1():
     X_train, y_train, X_val, y_val = load_and_split("nonLinearData.pkl")
 
     """YOUR CODE HERE FOR Q1.1"""
-    raise NotImplementedError()
+    # kernel logistic regression with a polynomial kernel
+    loss_fn = KernelLogisticRegressionLossL2(0.01)
+    optimizer = GradientDescentLineSearch()
+    kernel = PolynomialKernel(2)
+    klr_model = KernelClassifier(loss_fn, optimizer, kernel)
+    klr_model.fit(X_train, y_train)
+
+    print(f"Training error {np.mean(klr_model.predict(X_train) != y_train):.1%}")
+    print(f"Validation error {np.mean(klr_model.predict(X_val) != y_val):.1%}")
+
+    fig = utils.plot_classifier(klr_model, X_train, y_train)
+    utils.savefig("logRegPolynomialKernel.png", fig)
+
+    # kernel logistic regression with a Gaussian RBF kernel
+    loss_fn = KernelLogisticRegressionLossL2(0.01)
+    optimizer = GradientDescentLineSearch()
+    kernel = GaussianRBFKernel(0.5)
+    klr_model = KernelClassifier(loss_fn, optimizer, kernel)
+    klr_model.fit(X_train, y_train)
+
+    print(f"Training error {np.mean(klr_model.predict(X_train) != y_train):.1%}")
+    print(f"Validation error {np.mean(klr_model.predict(X_val) != y_val):.1%}")
+
+    fig = utils.plot_classifier(klr_model, X_train, y_train)
+    utils.savefig("logRegGaussianRBFKernel.png", fig)
 
 
 @handle("1.2")

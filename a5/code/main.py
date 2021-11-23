@@ -213,7 +213,7 @@ def q4_1():
     
     model = LinearModel(loss_fn, sg_optimizer, check_correctness=False)
     model.fit(X_train, y_train)
-    print(model.fs)  # ~700 seems to be the global minimum.
+    print(model.fs) 
 
     print(f"Training MSE: {((model.predict(X_train) - y_train) ** 2).mean():.3f}")
     print(f"Validation MSE: {((model.predict(X_val) - y_val) ** 2).mean():.3f}")
@@ -232,7 +232,25 @@ def q4_3():
     X_val, _, _ = utils.standardize_cols(X_val_orig, mu, sigma)
 
     """YOUR CODE HERE FOR Q4.3"""
-    raise NotImplementedError()
+    loss_fn = LeastSquaresLoss()
+
+    g_optimizer = GradientDescent()
+    lr_getter = InverseSqrtLR(0.1)
+    sg_optimizer = StochasticGradient(g_optimizer, lr_getter, batch_size=10, max_evals=60)
+    
+    model = LinearModel(loss_fn, sg_optimizer, check_correctness=False)
+    model.fit(X_train, y_train)
+    print(model.fs) 
+
+    print(f"Training MSE: {((model.predict(X_train) - y_train) ** 2).mean():.3f}")
+    print(f"Validation MSE: {((model.predict(X_val) - y_val) ** 2).mean():.3f}")
+
+    # Plot the learning curve!
+    fig, ax = plt.subplots()
+    ax.plot(model.fs, marker="o")
+    ax.set_xlabel("Stochastic Gradient descent epochs")
+    ax.set_ylabel("Objective function f value")
+    utils.savefig("InverseSqrtLR_sgd_line_search_curve.png", fig)
 
 
 if __name__ == "__main__":

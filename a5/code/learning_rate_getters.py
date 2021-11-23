@@ -22,16 +22,18 @@ class ConstantLR(LearningRateGetter):
 class InverseLR(LearningRateGetter):
     def get_learning_rate(self):
         """YOUR CODE HERE FOR Q4.2"""
-        raise NotImplementedError()
-
+        self.num_evals += 1
+        return self.multiplier/self.num_evals
 
 class InverseSquaredLR(LearningRateGetter):
     def get_learning_rate(self):
         """YOUR CODE HERE FOR Q4.2"""
-        raise NotImplementedError()
+        self.num_evals += 1
+        return self.multiplier/(self.num_evals**2)
 
 
 class InverseSqrtLR(LearningRateGetter):
     def get_learning_rate(self):
         """YOUR CODE HERE FOR Q4.2"""
-        raise NotImplementedError()
+        self.num_evals += 1
+        return self.multiplier/(np.sqrt(self.num_evals))

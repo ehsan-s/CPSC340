@@ -34,7 +34,16 @@ class PolynomialKernel(Kernel):
         """
 
         """YOUR CODE HERE FOR Q1.1"""
-        raise NotImplementedError()
+        n1, d = X1.shape
+        n2, d = X2.shape
+        K = np.zeros((n1, n2))
+        for i in range(n1):
+            X_i = X1[i]
+            for j in range(n2):
+                X_j = X2[j]
+            K[i, j] = (1 + X_i @ X_j.T) ** self.p
+
+        return K
 
 
 class GaussianRBFKernel(Kernel):
@@ -50,4 +59,13 @@ class GaussianRBFKernel(Kernel):
         """
 
         """YOUR CODE HERE FOR Q1.1"""
-        raise NotImplementedError()
+        n1, d = X1.shape
+        n2, d = X2.shape
+        K = np.zeros((n1, n2))
+        for i in range(n1):
+            X_i = X1[i]
+            for j in range(n2):
+                X_j = X2[j]
+            K[i, j] = np.exp(- (np.linalg.norm(X_i - X_j) ** 2) / (2 * (self.sigma**2) ) )
+
+        return K

@@ -41,7 +41,7 @@ class PolynomialKernel(Kernel):
             X_i = X1[i]
             for j in range(n2):
                 X_j = X2[j]
-            K[i, j] = (1 + X_i @ X_j.T) ** self.p
+                K[i, j] = (1 + X_i @ X_j.T) ** self.p
 
         return K
 
@@ -66,6 +66,6 @@ class GaussianRBFKernel(Kernel):
             X_i = X1[i]
             for j in range(n2):
                 X_j = X2[j]
-            K[i, j] = np.exp(- (np.linalg.norm(X_i - X_j) ** 2) / (2 * (self.sigma**2) ) )
+                K[i, j] = np.exp(- (np.linalg.norm(X_i - X_j) ** 2) / (2 * (self.sigma**2) ) )
 
         return K

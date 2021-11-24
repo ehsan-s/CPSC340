@@ -110,8 +110,8 @@ def q1_1():
     # kernel logistic regression with a polynomial kernel
     loss_fn = KernelLogisticRegressionLossL2(0.01)
     optimizer = GradientDescentLineSearch()
-    kernel = PolynomialKernel(2)
-    klr_model = KernelClassifier(loss_fn, optimizer, kernel)
+    poly_kernel = PolynomialKernel(2)
+    klr_model = KernelClassifier(loss_fn, optimizer, poly_kernel)
     klr_model.fit(X_train, y_train)
 
     print(f"Training error {np.mean(klr_model.predict(X_train) != y_train):.1%}")
@@ -123,8 +123,8 @@ def q1_1():
     # kernel logistic regression with a Gaussian RBF kernel
     loss_fn = KernelLogisticRegressionLossL2(0.01)
     optimizer = GradientDescentLineSearch()
-    kernel = GaussianRBFKernel(0.5)
-    klr_model = KernelClassifier(loss_fn, optimizer, kernel)
+    RBF_kernel = GaussianRBFKernel(0.5)
+    klr_model = KernelClassifier(loss_fn, optimizer, RBF_kernel)
     klr_model.fit(X_train, y_train)
 
     print(f"Training error {np.mean(klr_model.predict(X_train) != y_train):.1%}")
@@ -146,7 +146,51 @@ def q1_2():
     val_errs = np.full((len(sigmas), len(lammys)), 100.0)  # same for val
 
     """YOUR CODE HERE FOR Q1.2"""
-    raise NotImplementedError()
+    print('i, j = ', len(sigmas), len(lammys))
+
+    for i in range(len(sigmas)):
+        for j in range(len(lammys)):
+            print('step', i, j)
+            loss_fn = KernelLogisticRegressionLossL2(lammys[j])
+            optimizer = GradientDescentLineSearch()
+            RBF_kernel = GaussianRBFKernel(sigmas[i])
+            klr_model = KernelClassifier(loss_fn, optimizer, RBF_kernel)
+            klr_model.fit(X_train, y_train)
+
+            train_errs[i][j] = np.mean(klr_model.predict(X_train) != y_train)
+            val_errs[i][j] = np.mean(klr_model.predict(X_val) != y_val)
+
+    #------- min train
+    argmin_train_errs = np.unravel_index(np.argmin(train_errs, axis=None), train_errs.shape)
+    print('min train_err:\n', train_errs[argmin_train_errs])
+    min_train_sigma, min_train_lammy = sigmas[argmin_train_errs[0]], lammys[argmin_train_errs[1]]
+    print('min train_error occurs for (sigma, lammy):', (min_train_sigma, min_train_lammy) )
+    
+    loss_fn = KernelLogisticRegressionLossL2(min_train_lammy)
+    optimizer = GradientDescentLineSearch()
+    RBF_kernel = GaussianRBFKernel(min_train_sigma)
+    klr_model = KernelClassifier(loss_fn, optimizer, RBF_kernel)
+    klr_model.fit(X_train, y_train)
+    print(f"Training error {np.mean(klr_model.predict(X_train) != y_train):.1%}")
+    print(f"Validation error {np.mean(klr_model.predict(X_val) != y_val):.1%}")
+    fig = utils.plot_classifier(klr_model, X_train, y_train)
+    utils.savefig("GridSearch_min_train_Kernel.png", fig)
+
+    #------- min val
+    argmin_val_errs = np.unravel_index(np.argmin(val_errs, axis=None), val_errs.shape)
+    print('min val_err:\n', val_errs[argmin_val_errs])
+    min_val_sigma, min_val_lammy = sigmas[argmin_val_errs[0]], lammys[argmin_val_errs[1]]
+    print('min val_error occurs for (sigma, lammy):', (min_val_sigma, min_val_lammy) )
+
+    loss_fn = KernelLogisticRegressionLossL2(min_val_lammy)
+    optimizer = GradientDescentLineSearch()
+    RBF_kernel = GaussianRBFKernel(min_val_sigma)
+    klr_model = KernelClassifier(loss_fn, optimizer, RBF_kernel)
+    klr_model.fit(X_train, y_train)
+    print(f"Training error {np.mean(klr_model.predict(X_train) != y_train):.1%}")
+    print(f"Validation error {np.mean(klr_model.predict(X_val) != y_val):.1%}")
+    fig = utils.plot_classifier(klr_model, X_train, y_train)
+    utils.savefig("GridSearch_min_val_Kernel.png", fig)
 
     # Make a picture with the two error arrays. No need to worry about details here.
     fig, axes = plt.subplots(1, 2, figsize=(12, 5), constrained_layout=True)

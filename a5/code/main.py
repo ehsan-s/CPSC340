@@ -195,8 +195,24 @@ def q3_2():
     utils.savefig("animals_random.png", fig)
 
     """YOUR CODE HERE FOR Q3"""
-    raise NotImplementedError()
-
+    pca_encoder = PCAEncoder(2)
+    pca_encoder.fit(X_train)
+    Z = pca_encoder.encode(X_train)
+    fig, ax = plt.subplots()
+    ax.scatter(Z[:, 0], Z[:, 1])
+    for i in random_is:
+        xy = Z[i, :]
+        ax.annotate(animal_names[i], xy=xy)
+    utils.savefig("animals_pca.png", fig)
+    pca_w = pca_encoder.W[0, :]
+    print(trait_names.shape)
+    print(np.argmax(pca_w))
+    print(np.argmin(pca_w))
+    print(trait_names[np.argmax(abs(pca_w))])
+    print(trait_names[np.argmax(abs(pca_encoder.W[1, :]))])
+    X_st = X_train - mu
+    ve = np.linalg.norm(Z @ pca_encoder.W - X_st)**2 / np.linalg.norm(X_st)**2
+    print(ve)
 
 @handle("4")
 def q4():

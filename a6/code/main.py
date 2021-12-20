@@ -90,6 +90,7 @@ def main():
 def q1():
     X_train = load_dataset("highway.pkl")["X"].astype(float) / 255.0
     n, d = X_train.shape
+    print(n, d)
     h, w = 64, 64  # height and width of each image
     k = 5  # number of PCs
     threshold = 0.1  # threshold for being considered "foreground"
@@ -232,8 +233,9 @@ def q2_1():
 
     Y_train, Y_valid = utils.create_rating_matrix(ratings, n, d, "userId", "movieId")
 
-    raise NotImplementedError()
+    print(np.count_nonzero(~np.isnan(Y_train)))
 
+    print(np.count_nonzero(~np.isnan(Y_valid)))
 
 
 @handle("2.2")
@@ -306,9 +308,9 @@ def q2_3():
 
     avg_rating = np.nanmean(Y_train)
 
-    k = 50
-    fun_obj_w = CollaborativeFilteringWLoss(lammyZ=1, lammyW=1)
-    fun_obj_z = CollaborativeFilteringZLoss(lammyZ=1, lammyW=1)
+    k = 20
+    fun_obj_w = CollaborativeFilteringWLoss(lammyZ=5, lammyW=5)
+    fun_obj_z = CollaborativeFilteringZLoss(lammyZ=5, lammyW=5)
 
 
     optimizer_w = GradientDescentLineSearch(max_evals=100, verbose=False)

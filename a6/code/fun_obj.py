@@ -331,7 +331,16 @@ class CollaborativeFilteringZLoss(FunObj):
         self.lammyW = lammyW
 
     def evaluate(self, z, W, Y):
-        raise NotImplementedError()
+        n, d = Y.shape
+        k, _ = W.shape
+        Z = z.reshape(n, k)
+
+        R = Z @ W - Y
+        R[np.isnan(R)] = 0
+
+        f = np.sum(R ** 2) / 2 + (self.lammyZ/2)*(np.linalg.norm(Z) ** 2) + (self.lammyW/2)*(np.linalg.norm(W) ** 2)
+        g = R @ W.T + self.lammyZ * Z
+        return f, g.flatten()
 
 
 
@@ -341,7 +350,16 @@ class CollaborativeFilteringWLoss(FunObj):
         self.lammyW = lammyW
 
     def evaluate(self, w, Z, Y):
-        raise NotImplementedError()
+        n, d = Y.shape
+        _, k = Z.shape
+        W = w.reshape(k, d)
+
+        R = Z @ W - Y
+        R[np.isnan(R)] = 0
+
+        f = np.sum(R ** 2) / 2 + (self.lammyZ/2)*(np.linalg.norm(Z) ** 2) + (self.lammyW/2)*(np.linalg.norm(W) ** 2)
+        g = Z.T @ R + self.lammyW * W
+        return f, g.flatten()
 
 
 
@@ -350,7 +368,14 @@ class RobustPCAFeaturesLoss(FunObj):
         self.epsilon = epsilon
 
     def evaluate(self, z, W, X):
-        raise NotImplementedError()
+        n, d = X.shape
+        k, _ = W.shape
+        Z = z.reshape(n, k)
+
+        R = Z @ W - X
+        f = np.sum(np.sqrt(R ** 2 + self.epsilon))
+        g = np.divide(R, np.sqrt(R ** 2 + self.epsilon)) @ W.T
+        return f, g.flatten()
 
 
 
@@ -359,7 +384,14 @@ class RobustPCAFactorsLoss(FunObj):
         self.epsilon = epsilon
 
     def evaluate(self, w, Z, X):
-        raise NotImplementedError()
+        n, d = X.shape
+        _, k = Z.shape
+        W = w.reshape(k, d)
+
+        R = Z @ W - X
+        f = np.sum(np.sqrt(R ** 2 + self.epsilon))
+        g = Z.T @ np.divide(R, np.sqrt(R ** 2 + self.epsilon))
+        return f, g.flatten()
 
 
 
